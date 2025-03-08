@@ -6,7 +6,6 @@ import routes.TitleRoutes
 import service.{HttpClient, TitleService}
 import com.comcast.ip4s._
 
-
 object App :
   
   def run[F[_]](implicit async: Async[F], parallel: cats.Parallel[F]): F[Nothing] = {

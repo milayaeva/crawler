@@ -26,8 +26,8 @@ object TitleService {
       logFetching(url) *>
         fetchHtml(url)
           .flatMap(parseHtml)
-          .map(title => url -> TitleResult(true, title))
-          .handleErrorWith(handleError(url))
+          .map(title => url -> TitleResult.success(title))
+          .handleErrorWith(e => Async[F].pure(url -> TitleResult.failure(e.getMessage)))
           .flatTap(_ => logCompleted(url))
     }
 
@@ -56,12 +56,6 @@ object TitleService {
     // Логирование завершения обработки URL
     private def logCompleted(url: String): F[Unit] = {
       logger.info(s"Completed URL: $url")
-    }
-
-    // бработка ошибок
-    private def handleError(url: String)(e: Throwable): F[(String, TitleResult)] = {
-      logger.error(e)(s"Error fetching URL: $url") *>
-        Async[F].pure(url -> TitleResult(false, e.getMessage))
     }
   }
 }

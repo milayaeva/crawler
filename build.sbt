@@ -35,7 +35,7 @@ libraryDependencies ++= Seq(
 
   // для синтаксиа cats io
   "org.typelevel" %% "cats-core" % typelevelCats,
-  "org.typelevel" %% "cats-effect" % catsEffectVersion
+  "org.typelevel" %% "cats-effect" % catsEffectVersion,
 )
 lazy val root = (project in file("."))
   .settings(
