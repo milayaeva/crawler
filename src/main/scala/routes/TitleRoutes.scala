@@ -16,21 +16,19 @@ import io.circe.generic.auto._
 object TitleRoutes {
   def routes[F[_]: Async: cats.Parallel](titleService: TitleService[F]): HttpRoutes[F] = {
 
-    // HTTP маршрутов например GET, POST
+    // HTTP маршруты
     val dsl = Http4sDsl[F]
     import dsl._
-
-    // HTTP маршруты
     HttpRoutes.of[F] {
 
-      // Обрабатываем POST-запрос по пути "/title"
+      // Обрабатываем POST-запрос по пути "/api/title"
       case req @ POST -> Root / "api" / "title" =>
         for {
           // Парсим JSON запрос в модель UrlRequest
           urlRequest <- req.as[UrlRequest]
 
           // Для каждого URL параллельно получаем title через сервис
-          titles <- urlRequest.urls.parTraverse(titleService.fetchTitle)
+          titles <- urlRequest.urls.parTraverse(url => titleService.extractTitle(url))
 
           // Отвечаем JSON объектом, где ключ — URL, а значение — результат (успех/ошибка и title)
           response <- Ok(titles.toMap)
