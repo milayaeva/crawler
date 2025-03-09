@@ -12,6 +12,7 @@ import org.http4s.dsl.Http4sDsl
 import service.TitleService
 import org.http4s.circe.CirceEntityCodec._
 import io.circe.generic.auto._
+import model.TitleResult
 
 object TitleRoutes {
   def routes[F[_]: Async: cats.Parallel](titleService: TitleService[F]): HttpRoutes[F] = {
@@ -19,9 +20,9 @@ object TitleRoutes {
     // HTTP маршруты
     val dsl = Http4sDsl[F]
     import dsl._
-    HttpRoutes.of[F] {
 
-      // Обрабатываем POST-запрос по пути "/api/title"
+    HttpRoutes.of[F] {
+          
       case req @ POST -> Root / "api" / "title" =>
         for {
           // Парсим JSON запрос в модель UrlRequest
@@ -29,9 +30,8 @@ object TitleRoutes {
 
           // Для каждого URL параллельно получаем title через сервис
           titles <- urlRequest.urls.parTraverse(url => titleService.extractTitle(url))
-
-          // Отвечаем JSON объектом, где ключ — URL, а значение — результат (успех/ошибка и title)
-          response <- Ok(titles.toMap)
+          
+          response <- Ok(Map("results" -> titles))
         } yield response
     }
   }

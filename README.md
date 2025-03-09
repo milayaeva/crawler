@@ -27,13 +27,17 @@
 ### Пример ответа:
 ```json
 {
-  "https://scala-lang.org": {
-    "success": true,
-    "message": "The Scala Programming Language"
-  },
-  "https://http4s.org": {
-    "success": true,
-    "message": "http4s"
-  }
+  "results": [
+    {
+      "url": "https://scala-lang.org",
+      "success": true,
+      "message": "The Scala Programming Language"
+    },
+    {
+      "url": "https://http4s.org",
+      "success": true,
+      "message": "http4s"
+    }
+  ]
 }
 ```

@@ -9,7 +9,7 @@ import org.jsoup.Jsoup
 
 // Сервис для извлечения title из HTML страниц
 trait TitleService[F[_]] {
-  def extractTitle(url: String): F[(String, TitleResult)]
+  def extractTitle(url: String): F[TitleResult]
 }
 
 object TitleService {
@@ -20,14 +20,14 @@ object TitleService {
 
     private val logger = Slf4jLogger.getLogger[F]
 
-    override def extractTitle(url: String): F[(String, TitleResult)] = {
+    override def extractTitle(url: String): F[TitleResult]  = {
       logger.info(s"Extracting title from: $url") *>
         htmlFetcher.fetchHtml(url) // Получаем HTML через отдельный сервис
-          .flatMap(parseHtml) // Извлекаем title
-          .map(title => url -> TitleResult.success(title))
+          .flatMap(parseHtml)
+          .map(title => TitleResult(url, true, title))
           .handleErrorWith { e =>
             logger.error(e)(s"Failed to extract title from: $url") *>
-              Async[F].pure(url -> TitleResult.failure(e.getMessage))
+              Async[F].pure(TitleResult(url, false, e.getMessage))
           }
           .flatTap(_ => logger.info(s"Completed extracting title from: $url"))
     }
